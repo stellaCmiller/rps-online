@@ -1,0 +1,68 @@
+header{
+    width: 75%;
+    text-align: center;
+    margin: 10px 0px 15px 0px;
+    font-size: 48pt;
+}
+
+#smash{
+    font-family: 'Shojumaru', cursive;
+    font-size: 60pt;
+}
+h1 span:nth-child(1){font-family: 'Bungee', cursive;}
+h1 span:nth-child(2){font-family: 'Lily Script One', cursive;}
+h1 span:nth-child(3){
+    font-family: 'Ceviche One', cursive;
+    font-size: 60pt;
+}
+
+#player-info{
+    width: 75%;
+    text-align: center;
+    font-size: 16pt;
+}
+
+#new-player-modal{
+    display: none;
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.inner-modal{
+    text-align: center;
+    background-color: #eeeeee;
+    width: 50%;
+    margin: 10vh auto;
+    padding: 20px;
+}
+
+.action-box{
+    display: inline-block;
+    height: 250px;
+    width: 45%;
+    margin: auto;
+    border: 3px solid red;
+    padding: 10px;
+} 
+
+#chat-container{
+    position: fixed;
+    right: 0px;
+    width: 20%;
+    height: 100vh;
+    top: 0;
+    border: 3px solid red;
+}
+
+#arena{
+    display: flex;
+}
+
+#game-container{
+    width: 75%;
+    margin-left: 2vw;
+}

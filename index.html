@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rock Paper Scissors SMASH</title>
+
+    <!--Browser Reset-->
+    <link rel="stylesheet" href="assets/css/reset.css">
+
+    <!--Custom Styles-->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!--Dank Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Bungee|Ceviche+One|Lily+Script+One|Shojumaru" rel="stylesheet">
+</head>
+
+<body>
+    <!--Modal for adding a player-->
+    <div id="new-player-modal">
+        <div class="inner-modal">
+            <h2>Ready to to Smash?</h2>
+            <form>
+                <input id="player-name" type="text" name="name">
+                <input id="add-player" type="submit" value="submit">
+            </form>
+        </div>
+    </div>
+
+    <header>
+        <h1><span>Rock </span><span>Paper </span><span>Scissors </span></h1>
+        <h1 id="smash">SMASH</h1>
+    </header>
+
+    <div id="player-info">
+        <h2>Hello <span id="player-name-display"></span>!! Wins: <span id="wins-display"></span> Losses: <span id = "lose-display"></span>
+    </div>
+
+    <!--Test post pls ignore-->
+    <button id="test-button">
+        Yeet
+    </button>
+
+
+    <div id="game-container">
+        <!--Player boxes-->
+        <section id="arena">
+            <div id="playerOne" class="action-box">
+                <p>This column has player 1</p>
+            </div>
+            <div id="playerTwo" class="action-box">
+                <p>This column has player 2</p>
+            </div>
+        </section>
+
+        <!--Player Stats and Queue Status-->
+        <div id="text">
+            <p>Updates position in queue</p>
+            <p>Probably some other shit idk</p>
+        </div>
+    </div>
+
+    <!--Chat-->
+    <aside id="chat-container">
+        <p>Totes putting the chat box over here on the right like twitch chat</p>
+    </aside>
+
+    <!--Firebase Reference-->
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+    <!--JQuery Reference-->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <!--Logic-->
+    <script src="assets/javascript/app.js"></script>
+
+</body>
+
+</html>

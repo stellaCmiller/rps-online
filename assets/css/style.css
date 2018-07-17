@@ -20,6 +20,7 @@ h1 span:nth-child(3){
     width: 75%;
     text-align: center;
     font-size: 16pt;
+    margin-bottom: 10px;
 }
 
 #new-player-modal{
@@ -65,4 +66,17 @@ h1 span:nth-child(3){
 #game-container{
     width: 75%;
     margin-left: 2vw;
+}
+
+#text{
+    margin-top: 10px;
+    text-align: center;
+}
+
+#find-game{
+    background-color: darkorange;
+    border-color: darkorange;
+    padding: 10px 5px 10px 5px;
+    font-family: 'Shojumaru', cursive;
+    font-size: 16pt;
 }

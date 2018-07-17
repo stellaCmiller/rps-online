@@ -13,38 +13,34 @@ var db = firebase.database();
 
 //Object containing game logic
 var rockPaperScissors = {
-    /*First checks if there is an RPS key in local storage. If not, the getNewPlayerInfo method is called. If there is, the playerSearch method is called.*/
+    /*First checks if there is an RPS key in local storage. If not, the modal is displayed to get the player name. If there is, the playerSearch method is called.*/
     checkPlayer: function(){
         var playerID = localStorage.getItem("rpsKey");
         if (playerID != null){
             this.playerSearchAndDisplay(playerID);
         } else {
-            this.getNewPlayerInfo();
+            $("#new-player-modal").css("display", "block");
         }
     },
 
     /*Searches the database with the ID in local storage and displays the player name and win count*/
     playerSearchAndDisplay: function(id){
-        db.ref(id).once("value").then(function(snapshot){
-            console.log(snapshot.val());
+        db.ref(`/Users/${id}`).once("value").then(function(snapshot){
             $("#player-name-display").text(snapshot.val().name);
             $("#wins-display").text(snapshot.val().wins);
             $("#lose-display").text(snapshot.val().losses);
         });
     },
 
-    getNewPlayerInfo: function(){
-        $("#new-player-modal").css("display", "block");
-    },
-
     /*Adds a new player to the firebase database and stores the Unique ID generated into the browser*/
     addNewPlayer: function(newUser){
-        db.ref().push({
+        db.ref("/Users").push({
             name: newUser,
             wins: 0,
             losses: 0
         }).then(function(snapshot){
             localStorage.setItem("rpsKey", snapshot.key);
+            rockPaperScissors.playerSearchAndDisplay(snapshot.key);
         });
     },
 
@@ -54,10 +50,9 @@ var rockPaperScissors = {
 
 }
 
+//-----------------------Main--------------------------------------
+
 //ADD NEW PLAYER TEST FUNCTION
-$("#test-button").click(function(){
-    $("#new-player-modal").css("display", "block");
-});
 
 $("#add-player").click(function(){
     event.preventDefault();
@@ -65,5 +60,6 @@ $("#add-player").click(function(){
     $("#new-player-modal").css("display", "none");
 });
 
-
+//On page load, check if the user has visited the page before and displays the player name and win record from the db
 rockPaperScissors.checkPlayer();
+

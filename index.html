@@ -36,7 +36,7 @@
         <h1 id="smash">SMASH</h1>
     </header>
 
-    <!--Player Info Display-->
+    <!--Player Info and Stat Display-->
     <div id="player-info">
         <h2>Hello <span id="player-name-display"></span>!! Wins: <span id="wins-display"></span> Losses: <span id = "lose-display"></span>
     </div>
@@ -45,18 +45,39 @@
     <div id="game-container">
         <!--Player boxes-->
         <section id="arena">
-            <div id="playerOne" class="action-box">
-                <p>This column has player 1</p>
+            <div id="player-one" class="action-box">
+                <h2></h2>
+                <!--Shown to all but current players-->
+                <div class="spectator-display">
+                    <p>Waiting on selection...</p>
+                </div>
+                <!--Hidden to all but current players-->
+                <div class="rps-buttons">
+                    <input type="radio" name="rps">Rock<br><br>
+                    <input type="radio" name="rps">Paper<br><br>
+                    <input type="radio" name="rps">Scissors
+                </div>
             </div>
-            <div id="playerTwo" class="action-box">
-                <p>This column has player 2</p>
+            <div id="player-two" class="action-box">
+                <h2></h2>
+                <!--Shown to all but current players-->
+                <div class="spectator-display">
+                    <p>Waiting on selection...</p>
+                </div>
+                <!--Hidden to all but current players-->
+                <div class="rps-buttons">
+                    <input type="radio" name="rps">Rock<br><br>
+                    <input type="radio" name="rps">Paper<br><br>
+                    <input type="radio" name="rps">Scissors
+                </div>
             </div>
         </section>
 
-        <!--Player Stats and Queue Status-->
+        <!--Player Queue Status-->
         <div id="text">
             <button id="find-game">Enter Queue</button>
             <p>Your position in the queue is: <span id="queue-position"></span> out of <span id="queue-length"></span></p>
+            <button id="test">yo</button>
         </div>
     </div>
 

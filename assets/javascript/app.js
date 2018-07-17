@@ -11,15 +11,17 @@ var config = {
 firebase.initializeApp(config);
 var db = firebase.database();
 
-//----------Object containing game logic----------------------
+//----------Object containing game methods----------------------
 var rockPaperScissors = {
     
     /*Holds a local reference to the current player */
     player: {
         ID: localStorage.getItem("rpsKey"),
+        losses: 0,
         name: "",
         wins: 0,
-        losses: 0
+        inQueue: false,
+        queuePosition: 0
     },
 
     /*First checks if there is an RPS key in local storage. If not, the modal is displayed to get the player name. If there is, the playerSearch method is called.*/
@@ -58,18 +60,37 @@ var rockPaperScissors = {
 
     addPlayerToQueue: function(){
         db.ref("/Queue").push({
-            player: this.player,
-        })
+            playerID: this.player.ID,
+            name: this.player.name,
+            wins: this.player.wins,
+            losses: this.player.losses
+        });
+        this.player.inQueue = true;
     },
+
+    startMatch: function(twoPlayerArr){
+        $("#player-one h2").text(twoPlayerArr[0].name);
+        $("#player-two h2").text(twoPlayerArr[1].name);
+        if (this.player.ID == twoPlayerArr[0].ID){
+            $("#player-one .rps-buttons").css("display", "block");
+            $("#player-two .spectator-display").css("display", "block");
+        } else if (this.player.ID == twoPlayerArr[1].ID){
+            $("#player-two .rps-buttons").css("display", "block");
+            $("#player-one .spectator-display").css("display", "block");
+        } else {
+            $("#player-one .spectator-display").css("display", "block");
+            $("#player-two .spectator-display").css("display", "block");
+        }
+    }
 
 }
 
-//-----------------------Main--------------------------------------
+//-----------------------MAIN--------------------------------------
 //On page load, check if the user has visited the page before and displays the player name and win record from the db
 rockPaperScissors.checkPlayer();
 
 
-//-------------Event Listeners-----------------------------------
+//-------------Local Event Listeners-------------------------------
 //If this is the player's first visit to the site, pop up a modal and have them enter their name into the db
 $("#add-player").click(function(){
     event.preventDefault();
@@ -77,22 +98,50 @@ $("#add-player").click(function(){
     $("#new-player-modal").css("display", "none");
 });
 
-//Places the player into the game queue
+//Places the player into the game queue when the "Enter Queue" button is clicked
 $("#find-game").click(function(){
-    rockPaperScissors.addPlayerToQueue();
-})
+    if (rockPaperScissors.player.inQueue == false){
+        rockPaperScissors.addPlayerToQueue();
+    }
+});
 
+//When the user leaves the page, he is removed from the queue automatically
+$("#test").click(function() {
+    console.log(db.ref("/Queue").child("player").val());
+});
 
-/*Each time a player is added to the queue, updates the player's position in the queue */
+//------------LOCAL QUEUE LISTENER--------------
+/*Each time a player is added to the queue or removed from it, updates the player's position in the queue locally*/
 db.ref("/Queue").on("value", function(snapshot){
-    var queuePosition = 0;
-    var newArr = Object.keys(snapshot.val());
-    $("#queue-length").text(newArr.length);
-    snapshot.forEach(function(childSnapshot) {
-        queuePosition++;
-        if (rockPaperScissors.player == childSnapshot.val().player){
-            return true;
+    if (snapshot.val() != null){
+        rockPaperScissors.player.queuePosition = 0;
+        var newArr = Object.keys(snapshot.val());
+        $("#queue-length").text(newArr.length);
+        snapshot.forEach(function(childSnapshot) {
+            rockPaperScissors.player.queuePosition++;
+            if (rockPaperScissors.player.ID == childSnapshot.val().playerID){
+                return true;
+            }
+        });
+        $("#queue-position").text(rockPaperScissors.player.queuePosition);
+    }
+});
+
+
+//--------QUEUE MATCH HANDLER-------CHANGE TO CHILD REMOVED AFTER TESTING------------
+db.ref("/Queue").on("value", function(snapshot){
+    if (snapshot.val()!= null){
+        if (Object.keys(snapshot.val()).length >= 2){
+            var first2 = 0;
+            var players = [];
+            snapshot.forEach(function(childSnapshot) {
+                first2++;
+                players.push(childSnapshot.val().player)
+                if (first2 == 2){
+                    return true;
+                }
+            });
+            rockPaperScissors.startMatch(players);
         }
-    });
-    $("#queue-position").text(queuePosition);
+    }
 });

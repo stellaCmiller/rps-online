@@ -92,7 +92,7 @@ var rockPaperScissors = {
         db.ref(`/Queue/${this.player.queueKey}`).update({
             selection: choice
         });
-        this.checkSelections();
+        //this.checkSelections();
     },
 
     /*When both players have made a selection, the playRPS method determines the winner */

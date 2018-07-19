@@ -118,23 +118,40 @@ var rockPaperScissors = {
         console.log("we got em bois");
         console.log(choicesArr);
         if (choicesArr[0].selection == choicesArr[1].selection){
-            rockPaperScissors.outComeTie(choicesArr[1].selection);
+            rockPaperScissors.outcomeTie(choicesArr[1].selection);
+        } else if (choicesArr[0].selection == "Rock" && choicesArr[1].selection == "Scissors"){
+            rockPaperScissors.winner(choicesArr[0], choicesArr[1]);
+        } else if (choicesArr[0].selection == "Paper" && choicesArr[1] == "Rock"){
+            rockPaperScissors.winner(choicesArr[0], choicesArr[1]);
+        } else if (choicesArr[0].selection == "Scissors" && choicesArr[1] == "Paper"){
+            rockPaperScissors.winner(choicesArr[0], choicesArr[1]);
+        } else {
+            rockPaperScissors.winner(choicesArr[1], choicesArr[0])
         }
-    },
+    }, 
 
     //Displays the results of the tie, then after 5 seconds removes both players from the queue
-    outComeTie: function(rps){
+    outcomeTie: function(rps){
         console.log("this here is a tie");
-        $("#player-one").text(`There was a tie!!! You both chose${rps}`);
-        $("#player-two").text(`There was a tie!!! You both chose${rps}`);
+        $("#player-one").text(`There was a tie!!! You both chose ${rps}`);
+        $("#player-two").text(`There was a tie!!! You both chose ${rps}`);
         setTimeout(function(){
             rockPaperScissors.removeFromQueue();
         }, 5000);
     },
 
-    //After the results of the game are displayed, players are removed from the queue
+    winner: function(winner, loser){
+        console.log("the winner is " + winner);
+        console.log("the loser is "+ loser);
+    },
+
+    //After the results of the game are displayed, or when a player DCs, the player is removed from the queue
     removeFromQueue: function(){
         db.ref(`/Queue/${rockPaperScissors.player.queueKey}`).remove();
+        rockPaperScissors.player.inQueue = false;
+        rockPaperScissors.player.queuePosition = 0;
+        $("#queue-position").text("___");
+        $("#queue-length").text("___");
 
     }
 }
@@ -163,9 +180,7 @@ $("#find-game").click(function(){
 
 //When the user leaves the page, he is removed from the queue automatically
 $(window).on("unload", function() {
-    db.ref(`/Queue/${rockPaperScissors.player.queueKey}`).remove();
-    rockPaperScissors.player.inQueue = false;
-    rockPaperScissors.player.queuePosition = 0;
+    rockPaperScissors.removeFromQueue();
 });
 
 /*Calls the log selection method to store the user input in firebase */

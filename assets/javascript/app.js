@@ -89,9 +89,11 @@ var rockPaperScissors = {
 
     /*When the player makes a choice, firebase is updated with their selection */
     logSelection: function(choice){
-        db.ref(`/Queue/${this.player.queueKey}`).update({
-            selection: choice
-        });
+        console.log(this.player.queueKey);
+        console.log(choice);
+        //db.ref(`/Queue/${this.player.queueKey}`).update({
+           // selection: choice
+        //});
         //this.checkSelections();
     },
 

@@ -22,7 +22,7 @@
     <!--Modal for adding a player-->
     <div id="new-player-modal">
         <div class="inner-modal">
-            <h2>Ready to to Smash?</h2>
+            <h2>Ready to to Smash? Enter your name to get started!</h2>
             <form>
                 <input id="player-name" type="text" name="name">
                 <input id="add-player" type="submit" value="submit">
@@ -66,9 +66,9 @@
                 </div>
                 <!--Hidden to all but current players-->
                 <div class="rps-buttons">
-                    <input type="radio" name="rps">Rock<br><br>
-                    <input type="radio" name="rps">Paper<br><br>
-                    <input type="radio" name="rps">Scissors
+                    <input type="radio" name="rps" value="r">Rock<br><br>
+                    <input type="radio" name="rps" value="p">Paper<br><br>
+                    <input type="radio" name="rps" value="s">Scissors
                 </div>
             </div>
         </section>
@@ -76,14 +76,13 @@
         <!--Player Queue Status-->
         <div id="text">
             <button id="find-game">Enter Queue</button>
-            <p>Your position in the queue is: <span id="queue-position"></span> out of <span id="queue-length"></span></p>
-            <button id="test">yo</button>
+            <p>Your position in the queue is: <span id="queue-position">___</span> out of <span id="queue-length">___</span></p>
         </div>
     </div>
 
     <!--Chat-->
     <aside id="chat-container">
-        <p>Totes putting the chat box over here on the right like twitch chat</p>
+        <textarea id="chat-input" rows="4">Enter a message!</textarea>
     </aside>
 
     <!--Firebase Reference-->

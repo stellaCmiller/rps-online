@@ -112,14 +112,30 @@ var rockPaperScissors = {
         });
     },
 
-    /*Actual logic for RPS UNFINISHED*/
+    //Actual logic for RPS UNFINISHED
+    //Because the array remakes itself after the second player makes a selection, player 1 will always be arr[0]
     playRPS: function(choicesArr){
         console.log("we got em bois");
-    //     if (p1choice == p2choice){
-    //         console.log("its a tie game bois");
-    //     } else if (p1choice == "r" && p2Choice == "s"){
-    //         console.log("player 1 wins");
-    //     }
+        console.log(choicesArr);
+        if (choicesArr[0].selection == choicesArr[1].selection){
+            rockPaperScissors.outComeTie(choicesArr[1].selection);
+        }
+    },
+
+    //Displays the results of the tie, then after 5 seconds removes both players from the queue
+    outComeTie: function(rps){
+        console.log("this here is a tie");
+        $("#player-one").text(`There was a tie!!! You both chose${rps}`);
+        $("#player-two").text(`There was a tie!!! You both chose${rps}`);
+        setTimeout(function(){
+            rockPaperScissors.removeFromQueue();
+        }, 5000);
+    },
+
+    //After the results of the game are displayed, players are removed from the queue
+    removeFromQueue: function(){
+        db.ref(`/Queue/${rockPaperScissors.player.queueKey}`).remove();
+
     }
 }
 

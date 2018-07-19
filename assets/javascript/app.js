@@ -92,29 +92,33 @@ var rockPaperScissors = {
         db.ref(`/Queue/${this.player.queueKey}`).update({
             selection: choice
         });
-        //this.checkSelections();
+        this.checkSelections();
     },
 
     /*When both players have made a selection, the playRPS method determines the winner */
     checkSelections: function(){
         db.ref("/Queue").on("value", function(snapshot){
-            var choicesArr;
-            var twoSelections;
+            var choicesArr = [];
             snapshot.forEach(function(childSnapshot) {
-                console.log(childSnapshot.val().selection);
+                if (childSnapshot.val().selection != null){
+                    choicesArr.push(childSnapshot.val());
+                }
             });
+            if (choicesArr.length == 2){
+                rockPaperScissors.playRPS(choicesArr);
+            }
         });
     },
 
     /*Actual logic for RPS UNFINISHED*/
     playRPS: function(choicesArr){
-        if (p1choice == p2choice){
-            console.log("its a tie game bois");
-        } else if (p1choice == "r" && p2Choice == "s"){
-            console.log("player 1 wins");
-        }
+        console.log("we got em bois");
+    //     if (p1choice == p2choice){
+    //         console.log("its a tie game bois");
+    //     } else if (p1choice == "r" && p2Choice == "s"){
+    //         console.log("player 1 wins");
+    //     }
     }
-
 }
 
 //-----------------------MAIN--------------------------------------

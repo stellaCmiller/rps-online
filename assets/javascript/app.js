@@ -141,8 +141,21 @@ var rockPaperScissors = {
     },
 
     winner: function(winner, loser){
-        console.log("the winner is " + winner);
-        console.log("the loser is "+ loser);
+        if (winner.playerID == rockPaperScissors.player.ID){
+            $("#player-one").text(`YOU WON!!! You played ${winner.selection}`);
+            $("#player-two").text(`Better luck next time, you played ${loser.selection}`);
+            rockPaperScissors.player.wins++;
+            db.ref(`/Users/${winner.playerID}`).update({
+                wins: rockPaperScissors.player.wins
+            });
+        } else {
+            $("#player-two").text(`YOU WON!!! You played ${winner.selection}`);
+            $("#player-one").text(`Better luck next time, you played ${loser.selection}`);
+            rockPaperScissors.player.losses++;
+            db.ref(`/Users/${loser.playerID}`).update({
+                losses: rockPaperScissors.player.losses
+            });
+        }
     },
 
     //After the results of the game are displayed, or when a player DCs, the player is removed from the queue

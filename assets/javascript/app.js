@@ -94,6 +94,8 @@ var rockPaperScissors = {
         db.ref(`/Queue/${this.player.queueKey}`).update({
            selection: choice
         });
+
+        //Checks if both players have made a choice
         this.checkSelections();
     },
 
@@ -106,13 +108,14 @@ var rockPaperScissors = {
                     choicesArr.push(childSnapshot.val());
                 }
             });
+            //When firebase has two selections, determine the winner
             if (choicesArr.length == 2){
                 rockPaperScissors.playRPS(choicesArr);
             }
         });
     },
 
-    //Actual logic for RPS UNFINISHED
+    //Actual logic for RPS
     //Because the array remakes itself after the second player makes a selection, player 1 will always be arr[0]
     playRPS: function(choicesArr){
         console.log("we got em bois");
@@ -132,7 +135,6 @@ var rockPaperScissors = {
 
     //Displays the results of the tie, then after 5 seconds removes both players from the queue
     outcomeTie: function(rps){
-        console.log("this here is a tie");
         $("#player-one").text(`There was a tie!!! You both chose ${rps}`);
         $("#player-two").text(`There was a tie!!! You both chose ${rps}`);
         setTimeout(function(){
@@ -142,29 +144,40 @@ var rockPaperScissors = {
 
     winner: function(winner, loser){
         if (winner.playerID == rockPaperScissors.player.ID){
-            $("#player-one").text(`YOU WON!!! You played ${winner.selection}`);
-            $("#player-two").text(`Better luck next time, you played ${loser.selection}`);
+
+            //The player will always see his win/loss info in the player 1 box
+            $("#player-two").empty();
+            $("#player-one").text(`YOU WON, ${winner.name}!!! You played ${winner.selection}`);
             rockPaperScissors.player.wins++;
+
+            //Update winner info in firebase
             db.ref(`/Users/${winner.playerID}`).update({
                 wins: rockPaperScissors.player.wins
             });
         } else {
-            $("#player-two").text(`YOU WON!!! You played ${winner.selection}`);
-            $("#player-one").text(`Better luck next time, you played ${loser.selection}`);
+            $("#player-two").empty();
+            $("#player-one").text(`Better luck next time ${loser.name}, you played ${loser.selection}`);
             rockPaperScissors.player.losses++;
+
+            //Update loser info in firebase
             db.ref(`/Users/${loser.playerID}`).update({
                 losses: rockPaperScissors.player.losses
             });
         }
+        //Displays the results to all players for 5 seconds before automatic removal from the queue
+        setTimeout(function(){
+            rockPaperScissors.removeFromQueue();
+        }, 5000);
     },
 
     //After the results of the game are displayed, or when a player DCs, the player is removed from the queue
     removeFromQueue: function(){
         db.ref(`/Queue/${rockPaperScissors.player.queueKey}`).remove();
-        rockPaperScissors.player.inQueue = false;
+        rockPaperScissors.player.inQueue = false; //Initial values reset
         rockPaperScissors.player.queuePosition = 0;
         $("#queue-position").text("___");
         $("#queue-length").text("___");
+        pull2();
 
     }
 }
@@ -175,7 +188,8 @@ rockPaperScissors.checkPlayer();
 var players = [];
 
 
-//-------------Local Event Listeners-------------------------------
+
+//-------------LOCAL EVENT LISTENERS-------------------------------
 //If this is the player's first visit to the site, pop up a modal and have them enter their name into the db
 $("#add-player").click(function(){
     event.preventDefault();
@@ -196,23 +210,29 @@ $(window).on("unload", function() {
     rockPaperScissors.removeFromQueue();
 });
 
-/*Calls the log selection method to store the user input in firebase */
+/*Calls the log selection method to store the user's choice of rock, paper, or scissors in firebase */
 $("body").on("click", ".rps-buttons input", function(){
     rockPaperScissors.logSelection($(this).attr("value"));
 })
 
-//------------LOCAL QUEUE LISTENER--------------
+//------------LOCAL QUEUE UPDATER--------------
 /*Each time a player is added to the queue or removed from it, updates the player's position in the queue locally*/
 db.ref("/Queue").on("value", function(snapshot){
+
+    //If there are people in the queue...
     if (snapshot.val() != null){
+
+        //and if this player is IN the queue...
         if (rockPaperScissors.player.inQueue){
+
+            /*Set his position to 0 and count the number of players in the queue until it reaches the player, and the length of the array that contains the queue information is equal to the total number of players in the queue*/
             rockPaperScissors.player.queuePosition = 0;
             var newArr = Object.keys(snapshot.val());
             $("#queue-length").text(newArr.length);
             snapshot.forEach(function(childSnapshot) {
                 rockPaperScissors.player.queuePosition++;
                 if (rockPaperScissors.player.ID == childSnapshot.val().playerID){
-                    return true;
+                    return true; //breaks the forEach loop when the player
                 }
             });
             $("#queue-position").text(rockPaperScissors.player.queuePosition);
@@ -226,6 +246,8 @@ db.ref("/Queue").on("value", function(snapshot){
     if (snapshot.val()!= null){
         if (Object.keys(snapshot.val()).length >= 2){
             var first2 = 0;
+
+            //There is probably a way to do this more elegantly than using a "two" variable, but I'm not sure a for loop can be used to iterate over the snapshot.
             snapshot.forEach(function(childSnapshot) {
                 first2++;
                 players.push(childSnapshot.val())

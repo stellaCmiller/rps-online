@@ -89,8 +89,6 @@ var rockPaperScissors = {
 
     /*When the player makes a choice, firebase is updated with their selection */
     logSelection: function(choice){
-        console.log(this.player.queueKey);
-        console.log(choice);
         db.ref(`/Queue/${this.player.queueKey}`).update({
            selection: choice
         });
@@ -118,8 +116,6 @@ var rockPaperScissors = {
     //Actual logic for RPS
     //Because the array remakes itself after the second player makes a selection, player 1 will always be arr[0]
     playRPS: function(choicesArr){
-        console.log("we got em bois");
-        console.log(choicesArr);
         if (choicesArr[0].selection == choicesArr[1].selection){
             rockPaperScissors.outcomeTie(choicesArr[1].selection);
         } else if (choicesArr[0].selection == "Rock" && choicesArr[1].selection == "Scissors"){
@@ -136,10 +132,13 @@ var rockPaperScissors = {
     //Displays the results of the tie, then after 5 seconds removes both players from the queue
     outcomeTie: function(rps){
         $("#player-one").text(`There was a tie!!! You both chose ${rps}`);
-        $("#player-two").text(`There was a tie!!! You both chose ${rps}`);
         setTimeout(function(){
             rockPaperScissors.removeFromQueue();
+            //Resets the player array
+            players = [];
+            rockPaperScissors.gameOnFalse();
         }, 5000);
+
     },
 
     winner: function(winner, loser){
@@ -167,7 +166,11 @@ var rockPaperScissors = {
         //Displays the results to all players for 5 seconds before automatic removal from the queue
         setTimeout(function(){
             rockPaperScissors.removeFromQueue();
+            //Resets the player array
+            players = [];
+            rockPaperScissors.gameOnFalse();
         }, 5000);
+
     },
 
     //After the results of the game are displayed, or when a player DCs, the player is removed from the queue
@@ -177,16 +180,40 @@ var rockPaperScissors = {
         rockPaperScissors.player.queuePosition = 0;
         $("#queue-position").text("___");
         $("#queue-length").text("___");
-        pull2();
+    },
 
+    /*When a match is finished and players are removed from the queue, the variable GameOn in firebase is set to false, which triggers the queue puller function*/
+    gameOnFalse: function(){
+        db.ref().update({
+            GameOn: false
+        });
+    },
+
+    /*When players are selected for a match, gameOn becomes True to prevent the pull2 function from triggering again before the match is up */
+    gameOnTrue: function(){
+        db.ref().update({
+            GameOn: true
+        });
     }
 }
 
-//-----------------------MAIN--------------------------------------
-//On page load, check if the user has visited the page before and displays the player name and win record from the db
-rockPaperScissors.checkPlayer();
+//----GLOBAL VARIABLES------
+
+/*Easier for this to be global because display is changed if the user is not currently in a match (not in the players array) */
 var players = [];
 
+//-----------------------MAIN--------------------------------------
+
+//On page load, check if the user has visited the page before and displays the player name and win record from the db
+rockPaperScissors.checkPlayer();
+
+//If there is not match being played, check the queue for players and start a match
+db.ref("/GameOn").on("value", function(snapshot){
+    console.log(snapshot.val());
+    if (snapshot.val() == false){
+        pull2FromQueue();
+    }
+})
 
 
 //-------------LOCAL EVENT LISTENERS-------------------------------
@@ -241,22 +268,28 @@ db.ref("/Queue").on("value", function(snapshot){
 });
 
 
-//--------QUEUE MATCH HANDLER-------CHANGE TO CHILD REMOVED AFTER TESTING? WHO KNOWS------------
-db.ref("/Queue").on("value", function(snapshot){
-    if (snapshot.val()!= null){
-        if (Object.keys(snapshot.val()).length >= 2){
-            var first2 = 0;
+//--------QUEUE MATCH HANDLER-------
+function pull2FromQueue(){
+    console.log("waiting...");
+    db.ref("/Queue").on("value", function(snapshot){
+        //if there are people in the queue...
+        if (snapshot.val()!= null){
 
-            //There is probably a way to do this more elegantly than using a "two" variable, but I'm not sure a for loop can be used to iterate over the snapshot.
-            snapshot.forEach(function(childSnapshot) {
-                first2++;
-                players.push(childSnapshot.val())
-                if (first2 == 2){
-                    return true;
-                }
-            });
-            rockPaperScissors.startMatch(players);
+            //and if there are at least 2 people in the queue...
+            if (Object.keys(snapshot.val()).length >= 2){
+                var first2 = 0;
+
+                //There is probably a way to do this more elegantly than using a "two" variable, but I'm not sure a for loop can be used to iterate over the snapshot.
+                snapshot.forEach(function(childSnapshot) {
+                    first2++;
+                    players.push(childSnapshot.val())
+                    if (first2 == 2){
+                        return true;
+                    }
+                });
+                rockPaperScissors.gameOnTrue();
+                rockPaperScissors.startMatch(players);
+            }
         }
-    }
-});
-
+    });
+}

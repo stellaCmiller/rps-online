@@ -9,7 +9,9 @@ You can play rock paper scissors with anyone else connected to the site. Only 2 
   * A few seconds after the game displays winning information, both players are removed from the queue, and the next 2 take their place
 
 ## Coming Soon (Features I want to add):
+* Cool animations!
+* Multiple JS files because 300 lines in one file is difficult to read
 * Global chat feature using firebase
-* Instead of implementing a global queue, I'd rather have multiple games of RPS going at the same time so that players can find games quicker, as soon as there are two people in the queue
+* Instead of implementing a global queue, I'd rather have multiple games of RPS going at the same time so that players can find games quicker, as soon as there are two people in the queue.
 
 
